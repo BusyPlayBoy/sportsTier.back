@@ -9,16 +9,16 @@ import readline from "node:readline";
 const pub = redis.createClient();
 pub.connect();
 
-(async function () {
-  await pub.zAdd("test",{score:100, value:"a"});
-  await pub.zAdd("test",{score:150,value:"bcd"});
-  console.log(await pub.zRangeByScoreWithScores("test",0,160));
-  for(let player of await pub.zRangeWithScores("test",0,-1)){
-    console.log(player);
-  }
-  //console.log(list);
-  await pub.quit();
-})();
+// (async function () {
+//   await pub.zAdd("test",{score:100, value:"a"});
+//   await pub.zAdd("test",{score:150,value:"bcd"});
+//   console.log(await pub.zRangeByScoreWithScores("test",0,160));
+//   for(let player of await pub.zRangeWithScores("test",0,-1)){
+//     console.log(player);
+//   }
+//   //console.log(list);
+//   await pub.quit();
+// })();
 
 // (async function(){
 //     console.log("result:", await main());

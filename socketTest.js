@@ -8,13 +8,13 @@ const rl = readline.createInterface({
 
 const clientSocket = io("http://127.0.0.1:3000");
 
-clientSocket.on("chatting",(data)=>{
-    console.log("chatting:",data);
-})
+clientSocket.on("makedMatch", (data) => {
+  console.log("makedMatch:", data);
+});
 
 rl.on("line", (input) => {
-  const [from,to,msg] = input.split(" ");
-  clientSocket.id = from;
-  console.log(clientSocket.id);
-  clientSocket.emit("chatting", JSON.stringify({ head: "chat", body: msg, to: to,from:from }));
+  const [email, sport] = input.split(" ");
+  // clientSocket.id = from;
+  // console.log(clientSocket.id);
+  clientSocket.emit("matchmaking", JSON.stringify({ email, sport }));
 });
