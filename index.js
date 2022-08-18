@@ -7,10 +7,8 @@ import sportsRouter from "./lib/routes/sports/index.js";
 import { Server } from "socket.io";
 import initServerSocket from "./lib/socket/index.js";
 import "./mongo.js";
-import path from "path";
-const __dirname = path.resolve();
-const __filename = path.resolve(__dirname, "lib/controllers/sports/matchMaker/worker.js");
-import { Worker } from "node:worker_threads";
+import {matchMaker} from "./lib/controllers/sports/matchMaker/matchMaking.js"
+import { sportsId } from "./lib/controllers/sports/utils.js";
 const app = express();
 
 const port = process.env.PORT || 3000;
@@ -31,4 +29,4 @@ server.listen({ port: port, host: "localhost" }, () => {
   );
 });
 
-const rpsWorker = new Worker(__filename, { workerData: { sportCode: 1 } });
+matchMaker("rps");

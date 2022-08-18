@@ -8,6 +8,8 @@ const rl = readline.createInterface({
 
 const clientSocket = io("http://127.0.0.1:3000");
 
+clientSocket.on("join")
+
 clientSocket.on("makedMatch", (data) => {
   console.log("makedMatch:", data);
 });
@@ -16,5 +18,5 @@ rl.on("line", (input) => {
   const [email, sport] = input.split(" ");
   // clientSocket.id = from;
   // console.log(clientSocket.id);
-  clientSocket.emit("matchmaking", JSON.stringify({ email, sport }));
+  clientSocket.emit("matchMaking", JSON.stringify({ email, sport }));
 });
