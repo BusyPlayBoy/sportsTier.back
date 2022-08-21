@@ -8,7 +8,6 @@ import { Server } from "socket.io";
 import initServerSocket from "./lib/socket/index.js";
 import "./mongo.js";
 import {matchMaker} from "./lib/controllers/sports/matchMaker/matchMaking.js"
-import { sportsId } from "./lib/controllers/sports/utils.js";
 const app = express();
 
 const port = process.env.PORT || 3000;
