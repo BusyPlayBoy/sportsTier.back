@@ -32,9 +32,9 @@ clientSocket.on("rpsMatchStart", async (data) => {
   let playerElo;
   let opponent;
   let opponentElo;
-  console.log("이메일을 입력하세요");
-  let inputEmail = await question("> ");
-  if (inputEmail === jsonData.player1) {
+  console.log("닉네임을 입력하세요");
+  let inputNickname = await question("> ");
+  if (inputNickname === jsonData.player1) {
     player = jsonData.player1;
     playerElo = jsonData.player1Elo;
     opponent = jsonData.player2;
@@ -49,15 +49,15 @@ clientSocket.on("rpsMatchStart", async (data) => {
   console.log("---------매치 시작!---------");
   let point = 0;
   clientSocket.on("rpsMatchRoundResult", (data) => {
-    let {round,result} = JSON.parse(data);
+    let { round, result } = JSON.parse(data);
     point += result;
     console.log(`포인트 변화 ${result}`);
-    if (round>=5){
+    if (round >= 5) {
       if (point > 0) console.log("승리!");
-    else if (point < 0) console.log("패배!");
-    else console.log("무승부!");
-    let sendData = { roomId, player, playerElo, opponent, opponentElo, point };
-    clientSocket.emit("rpsMatchResult", JSON.stringify(sendData));
+      else if (point < 0) console.log("패배!");
+      else console.log("무승부!");
+      let sendData = { roomId, player, playerElo, opponent, opponentElo, point };
+      clientSocket.emit("rpsMatchResult", JSON.stringify(sendData));
     }
   });
   for (let round = 1; round < 6; round++) {
@@ -73,16 +73,10 @@ clientSocket.on("rpsMatchStart", async (data) => {
   let input = await question("command 입력 > ");
   let command = input.split(" ")[0];
   switch (command) {
-    // matchMaking email sport 순으로 입력
+    // matchMaking nickname sport 순으로 입력
     case "matchMaking":
-      const [_, email, sport] = input.split(" ");
-      clientSocket.emit("matchMaking", JSON.stringify({ email, sport }));
+      const [_, nickname, sport] = input.split(" ");
+      clientSocket.emit("matchMaking", JSON.stringify({ nickname, sport }));
       break;
   }
 })();
-
-function sleep(sec) {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(), 1000 * sec);
-  });
-}
