@@ -83,6 +83,12 @@
   - 이점: 이를 통하면 서버와 클라이언트 간의 인증 절차에서 엑세스 토큰이 만료되더라도 클라이언트는 추가적인 절차를 밟지 않아도 됨. 즉 사용자의 만족도 증가. 또한 엑세스 토큰에 대한 세션 정보를 서버에서 저장하지 않기 때문에 서버의 부하를 줄일 수 있음. 
 ---
 
+- 로그아웃
+  - url: /account/logout
+  - method: GET
+  - 설명: 위 url로 로그아웃 요청을 보내면, Cache DB(Redis)에 저장된 해당 사용자의 리프레쉬 토큰을 삭제한 뒤, 사용자의 브라우저의 엑세스 토큰과 리프레쉬 토큰을 삭제 후 /account/login으로 리다이렉트.
+---
+
 - 매칭 시스템
   - 참고 : https://github.com/redis-developer/matcha
   - method: WebSocket(socket.io)
@@ -98,7 +104,11 @@
     // 예시 => {"player1":"fanatic5500@gmail.com", "player2":"fanatic5500@khu.ac.kr","roomId":randomUUID}
     ```
   - 설명: 실시간 매칭 시스템을 위해 웹소켓과 Redis의 pub/sub 이용. 클라이언트 측에서 'matchMaking' 이벤트와 함께 정보를 서버에 전송하면 해당 종목의 대기열에 사용자 정보(이메일), 해당 사용자의 elo rating, 해당 사용자가 대기열에 들어온 시각의 데이터를 삽입. 이 때 서버 프로세스 내부에 비동기적으로 작동하는 matchMaker가 무한 루프를 돌며 작동하는데, 이는 대기열 내 대기 시간이 가장 긴 사용자부터, 해당 사용자와 비슷한 실력 구간의(elo rating 상하로 200점 시작하여 15초마다 상하로 100점씩 추가되는 구간) 대기열 내 사용자 중 마찬가지로 가장 오래 대기한 이용자에 대해서 pub/sub 패턴을 통해 매치 메이킹 이벤트를 발생시킴. 이 와중에, 다른 클라이언트가 'matchMaking' 이벤트를 발생시키면 matchMaker가 해당 클라이언트를 확인 후 각 클라이언트에게 서로의 정보(이메일)와 방 번호를 반환
- 
+---
+
+- 가위바위보(RockPaperScissor, RPS)
+ - method: WebSocket(socket.io)
+ - request: event '
 
 ### 3. challenge
 
