@@ -4,10 +4,11 @@ import publicMiddleware from "./lib/routes/middleware/index.js";
 import "dotenv/config";
 import accountRouter from "./lib/routes/account.js";
 import sportsRouter from "./lib/routes/sports/index.js";
+import noticeRouter from "./lib/routes/notice/index.js";
 import { Server } from "socket.io";
 import initServerSocket from "./lib/socket/index.js";
 import "./mongo.js";
-import {matchMaker} from "./lib/controllers/sports/matchMaker/matchMaking.js"
+import { matchMaker } from "./lib/controllers/sports/matchMaker/matchMaking.js";
 const app = express();
 
 const port = process.env.PORT || 3000;
@@ -16,6 +17,7 @@ const server = http.createServer(app);
 app.use(publicMiddleware);
 app.use("/account", accountRouter);
 app.use("/sports", sportsRouter);
+app.use("/notice", noticeRouter);
 
 const serverSocket = new Server(server);
 initServerSocket(serverSocket);
