@@ -130,17 +130,146 @@
 
 - 가위바위보(RockPaperScissor, RPS)
 - method: WebSocket(socket.io)
-- request: event 
+- request: event
+
 ---
 
-#### 4) 공지, 문의 관련
+#### 4) 공지(일반 공지, 일대일 문의, FAQ) 관련
 
 - 일반 공지 목록 열람
   - url: /notice/commonNoticeList
   - method: GET
   - response: JSON
+    ```
+    [
+      {
+        "id": String,
+        "classification": "notice",
+        "writer": String(User.nickname),
+        "title": String,
+        "content": String,
+        "createdAt: Date.toISOString(),
+        "updatedAt": Date.toISOString(),
+      },
+      {...},
+      {...},
+      ...
+    ]
+    ```
+  - 설명: 일반 공지의 목록(Array)을 반환
 
+---
 
+- 일대일 문의 목록 열람
+  - url: /notice/directInquiryList
+  - method: GET
+  - response: JSON
+    ```
+    [
+      {
+        "id": String,
+        "classification": "1vs1",
+        "writer": String(User.nickname),
+        "title": String,
+        "content": String,
+        "createdAt: Date.toISOString(),
+        "updatedAt": Date.toISOString(),
+      },
+      {...},
+      {...},
+      ...
+    ]
+    ```
+  - 설명: 일대일 문의의 목록(Array)을 반환
+
+---
+
+- 일대일 문의 목록 열람
+  - url: /notice/faqList
+  - method: GET
+  - response: JSON
+    ```
+    [
+      {
+        "id": String,
+        "classification": "FAQ",
+        "writer": String(User.nickname),
+        "title": String,
+        "content": String,
+        "createdAt: Date.toISOString(),
+        "updatedAt": Date.toISOString(),
+      },
+      {...},
+      {...},
+      ...
+    ]
+    ```
+  - 설명: FAQ의 목록(Array)을 반환
+
+---
+
+- 개별 공지(일반 공지, 일대일 문의, FAQ) 열람
+  - url: /notice/get/${notice.id}
+  - method: GET
+  - response: JSON
+    ```
+    {
+      "id": String,
+      // classification 은 "notice", "1vs1", "FAQ" 중 하나의 값을 가짐
+      "classification": String,
+      "writer": String(User.nickname),
+      "title": String,
+      "content": String,
+      "createdAt: Date.toISOString(),
+      "updatedAt": Date.toISOString(),
+    }
+    ```
+  - 설명: url에 get 이후 공지의 id를 입력하여 요청을 전송
+
+---
+
+- 개별 공지 작성
+  - url: /notice/post
+  - method: POST
+  - request: JSON
+    ```
+    req.body = {
+      // classification 은 "notice", "1vs1", "FAQ" 중 하나의 값을 가짐
+      "classification": String,
+      "writer": String(User.nickname),
+      "title": String,
+      "content": String,
+    }
+    ```
+  - response: redirect => GET /notice/get/${notice.id}
+  - 설명: request를 위와 같이 작성하여 요청 시 DB에 공지 작성 가능. 이 때 일대일 문의를 제외한 다른 공지를 쓰기 위해서는 superUser 권한이 필요(isSuperUser=true).
+---
+
+- 개별 공지 수정
+  - url: /notice/put/${notice.id}
+  - method: PUT
+  - request: JSON
+    ```
+    req.body = {
+      "writer": String(User.nickname),
+      "title": String,
+      "content": String
+    }
+    ```
+  - response: redirect => GET /notice/get/${notice.id}
+  - 설명: 위와 같이 요청을 보낼 시 우선 해당 공지가 DB에 존재하는지 확인 후, 요청을 보낸 사용자가 이를 수정할 권한이 있는지 확인한 뒤 이를 수정
+---
+- 개별 공지 삭제
+  - url: /notice/delete/${notice.id}
+  - method: DELETE
+  - request: JSON
+    ```
+    req.body = {
+      "requester": String(User.nickname)
+    }
+    ```
+  - response: redirect => GET /notice/commonNoticeList
+  - 설명: 요청을 보낸 사용자의 권한이 superUser 권한이거나 글의 작성자인 경우, 해당 공지를 DB로부터 삭제
 ### 3. challenge
 
 - 메모리 누수
