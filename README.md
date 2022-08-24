@@ -131,6 +131,15 @@
 - 가위바위보(RockPaperScissor, RPS)
 - method: WebSocket(socket.io)
 - request: event 
+---
+
+#### 4) 공지, 문의 관련
+
+- 일반 공지 목록 열람
+  - url: /notice/commonNoticeList
+  - method: GET
+  - response: JSON
+
 
 ### 3. challenge
 

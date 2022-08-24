@@ -18,7 +18,6 @@ app.use(publicMiddleware);
 app.use("/account", accountRouter);
 app.use("/sports", sportsRouter);
 app.use("/notice", noticeRouter);
-
 const serverSocket = new Server(server);
 initServerSocket(serverSocket);
 
