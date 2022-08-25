@@ -60,8 +60,6 @@
   └─ redis.js
   ```
 
-````
-
 ---
 
 #### 1) 계정 관련
@@ -275,9 +273,11 @@
   - method: DELETE
   - response: redirect => GET /notice/commonNoticeList
   - 설명: 요청을 보낸 사용자의 권한이 superUser 권한이거나 글의 작성자인 경우, 해당 공지를 DB로부터 삭제. 이 때 작성자는 쿠키의 인증 토큰을 이용하여 식별하기 때문에 따로 데이터 전송 필요 x.
+
 ---
 
 #### 5) 마이페이지 관련
+
 - 마이페이지 열람
   - url: /mypage
   - method: GET
@@ -306,5 +306,3 @@
   - 초기 디자인에는 매칭 시스템을 worker_thread를 이용하여 비동기로 따로 처리하려 했지만, 콜백 힙에 worker가 계속 쌓여 힙이 터지는 현상이 발생.
   - 이를 파악하기 위해 chrome의 inspect를 활용했으며, 콜백 힙에 매칭 시스템이 0.1초마다 순차적으로 쌓이는 방식으로 구현하여 해결
   - chrome://inspect 관련 참고: https://ajh322.tistory.com/243?category=707635
-
-````
