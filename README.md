@@ -2,8 +2,6 @@
 
 ## Server
 
----
-
 ### 1. 사용 스택
 
 - Node.js
@@ -20,19 +18,25 @@
 
   ```
   server
-  ├─ .eslintrc.cjs
   ├─ index.js
   ├─ lib
   │  ├─ controllers
-  │  │  ├─ account.js
-  │  │  ├─ forJwt.js
-  │  │  └─ sports
-  │  │     ├─ matchMaker
-  │  │     │  ├─ matchMaking.js
-  │  │     │  └─ worker.js
-  │  │     ├─ rps.js
-  │  │     └─ utils.js
+  │  │  ├─ account
+  │  │  │  ├─ account.js
+  │  │  │  ├─ forJwt.js
+  │  │  │  └─ utils.js
+  │  │  ├─ notice
+  │  │  │  └─ notice.js
+  │  │  ├─ sports
+  │  │  │  ├─ matchMaker
+  │  │  │  │  ├─ matchMaking.js
+  │  │  │  │  └─ worker.js
+  │  │  │  ├─ rps.js
+  │  │  │  └─ utils.js
+  │  │  └─ utils.js
   │  ├─ models
+  │  │  ├─ notice
+  │  │  │  └─ index.js
   │  │  └─ user
   │  │     ├─ index.js
   │  │     └─ rps.js
@@ -40,19 +44,23 @@
   │  │  ├─ account.js
   │  │  ├─ middleware
   │  │  │  └─ index.js
+  │  │  ├─ notice
+  │  │  │  └─ index.js
   │  │  └─ sports
   │  │     ├─ index.js
   │  │     └─ rps.js
   │  └─ socket
   │     ├─ index.js
+  │     ├─ rps.js
   │     └─ utils.js
   ├─ mongo.js
   ├─ package-lock.json
   ├─ package.json
   ├─ README.md
   └─ redis.js
-
   ```
+
+````
 
 ---
 
@@ -78,7 +86,7 @@
     ```
   - response: JSON
     ```
-    {"accessToken":String, "refreshToken":String}
+    {"accessToken":String, "refreshToken":String, "email":String, "nickname":String}
     ```
   - 설명: 위 양식으로 로그인 요청을 보낼 시, Main DB(MongoDB)에 해당 이메일의 사용자가 존재하는지 확인 후, 존재한다면 엑세스 토큰과 리프레쉬 토큰을 반환. 이 때 토큰들이 반환되기는 하지만, 동시에 응답을 통해 클라이언트의 쿠키에 엑세스 토큰과 리프레쉬 토큰을 httponly로 설정해주기 때문에 클라이언트 쪽에서 향후 요청 시 이를 신경 쓸 필요없도록 구현. 또한 리프레쉬 토큰을 cache DB(Redis)에 저장하여 토큰 갱신 시 이용할 수 있도록 함.
 
@@ -107,6 +115,8 @@
       ```
       {"email":String, "nickname":String, "allowNotice":Boolean, "eloRating":Number, "match":Number, "win":Number}
       ```
+
+---
 
 #### 3) 매칭 관련
 
@@ -236,13 +246,13 @@
     req.body = {
       // classification 은 "notice", "1vs1", "FAQ" 중 하나의 값을 가짐
       "classification": String,
-      "writer": String(User.nickname),
       "title": String,
       "content": String,
     }
     ```
   - response: redirect => GET /notice/get/${notice.id}
-  - 설명: request를 위와 같이 작성하여 요청 시 DB에 공지 작성 가능. 이 때 일대일 문의를 제외한 다른 공지를 쓰기 위해서는 superUser 권한이 필요(isSuperUser=true).
+  - 설명: request를 위와 같이 작성하여 요청 시 DB에 공지 작성 가능. 이 때 일대일 문의를 제외한 다른 공지를 쓰기 위해서는 superUser 권한이 필요(isSuperUser=true). 이 때 작성자는 쿠키의 인증 토큰을 이용하여 식별하기 때문에 따로 데이터 전송 필요 x.
+
 ---
 
 - 개별 공지 수정
@@ -251,28 +261,50 @@
   - request: JSON
     ```
     req.body = {
-      "writer": String(User.nickname),
       "title": String,
       "content": String
     }
     ```
   - response: redirect => GET /notice/get/${notice.id}
-  - 설명: 위와 같이 요청을 보낼 시 우선 해당 공지가 DB에 존재하는지 확인 후, 요청을 보낸 사용자가 이를 수정할 권한이 있는지 확인한 뒤 이를 수정
+  - 설명: 위와 같이 요청을 보낼 시 우선 해당 공지가 DB에 존재하는지 확인 후, 요청을 보낸 사용자가 이를 수정할 권한이 있는지 확인한 뒤 이를 수정. 이 때 작성자는 쿠키의 인증 토큰을 이용하여 식별하기 때문에 따로 데이터 전송 필요 x.
+
 ---
+
 - 개별 공지 삭제
   - url: /notice/delete/${notice.id}
   - method: DELETE
-  - request: JSON
+  - response: redirect => GET /notice/commonNoticeList
+  - 설명: 요청을 보낸 사용자의 권한이 superUser 권한이거나 글의 작성자인 경우, 해당 공지를 DB로부터 삭제. 이 때 작성자는 쿠키의 인증 토큰을 이용하여 식별하기 때문에 따로 데이터 전송 필요 x.
+---
+
+#### 5) 마이페이지 관련
+- 마이페이지 열람
+  - url: /mypage
+  - method: GET
+  - response: JSON
     ```
     req.body = {
-      "requester": String(User.nickname)
+      user: {
+        "email": String,
+        "nickname": String,
+        "comment": String,
+      },
+      {종목명}: {
+        "match": Number,
+        "win": Number,
+        "draw": Number,
+        "eloRating" Number,
+      },
+      ...
     }
     ```
-  - response: redirect => GET /notice/commonNoticeList
-  - 설명: 요청을 보낸 사용자의 권한이 superUser 권한이거나 글의 작성자인 경우, 해당 공지를 DB로부터 삭제
+  - 설명: 요청 시 쿠키의 토큰을 통해 사용자를 식별하기 때문에 url 만으로 해당 요청이 누구의 요청인지 식별 가능.
+
 ### 3. challenge
 
 - 메모리 누수
   - 초기 디자인에는 매칭 시스템을 worker_thread를 이용하여 비동기로 따로 처리하려 했지만, 콜백 힙에 worker가 계속 쌓여 힙이 터지는 현상이 발생.
   - 이를 파악하기 위해 chrome의 inspect를 활용했으며, 콜백 힙에 매칭 시스템이 0.1초마다 순차적으로 쌓이는 방식으로 구현하여 해결
   - chrome://inspect 관련 참고: https://ajh322.tistory.com/243?category=707635
+
+````
