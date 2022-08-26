@@ -113,7 +113,25 @@
       ```
       {"email":String, "nickname":String, "allowNotice":Boolean, "eloRating":Number, "match":Number, "win":Number}
       ```
-
+  - 회원 경기 결과
+    - url: /sports/rps/userinfo/matchResult
+    - method: GET
+    - response: JSON
+      ```
+      [
+        {
+          "player": String,
+          "opponent": String,
+          // 묵: 0, 찌: 1, 빠: 2 
+          "playerRecord": [Number],
+          "opponentRecord": [Number],
+          // 0: 무승부, 1: 사용자 승리, 2: 사용자 패배
+          "winner": Number
+        },
+        ...
+      ]
+      ```
+    - 설명: 해당 회원의 rps 경기 결과 반환
 ---
 
 #### 3) 매칭 관련
