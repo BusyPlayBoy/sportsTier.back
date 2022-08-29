@@ -107,14 +107,14 @@
 
 - 가위바위보
   - 회원 정보
-    - url: /sports/rps/userinfo
+    - url: /sports/rps/userInfo
     - method: GET
     - response: JSON
       ```
       {"email":String, "nickname":String, "allowNotice":Boolean, "eloRating":Number, "match":Number, "win":Number}
       ```
   - 회원 경기 결과
-    - url: /sports/rps/userinfo/matchResult
+    - url: /sports/rps/userInfo/matchResult
     - method: GET
     - response: JSON
       ```
